@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Product Page Generator</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      font-family: 'Inter', sans-serif;
+      background-color: #e9eff4;
+      height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .popup-card {
+      width: 420px;
+      background-color: #ffffff;
+      border-radius: 10px;
+      box-shadow: 0 15px 25px rgba(0, 0, 0, 0.1);
+      padding: 30px;
+      animation: fadeIn 0.3s ease-in-out;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: scale(0.95); }
+      to { opacity: 1; transform: scale(1); }
+    }
+
+    h2 {
+      text-align: center;
+      margin-top: 0;
+      font-weight: 600;
+      color: #2a2a2a;
+    }
+
+    .input-section {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      margin-top: 20px;
+    }
+
+    input {
+      padding: 12px;
+      border: 1px solid #ccc;
+      border-radius: 6px;
+      font-size: 15px;
+      outline: none;
+    }
+
+    input:focus {
+      border-color: #007acc;
+    }
+
+    button {
+      padding: 12px;
+      background-color: #007acc;
+      color: white;
+      border: none;
+      border-radius: 6px;
+      font-size: 15px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background-color 0.2s ease;
+    }
+
+    button:hover {
+      background-color: #005fa3;
+    }
+
+    .result {
+      margin-top: 25px;
+      background-color: #f4f4f4;
+      padding: 15px;
+      border-radius: 8px;
+      font-size: 14px;
+      border: 1px solid #d9d9d9;
+      display: none;
+    }
+
+    .result img {
+      max-width: 100%;
+      border-radius: 6px;
+      margin-top: 10px;
+      margin-bottom: 10px;
+    }
+
+    .result strong {
+      display: inline-block;
+      margin-top: 8px;
+    }
+  </style>
+</head>
+<body>
+  <div class="popup-card">
+    <h2>Generate Product Info</h2>
+    <div class="input-section">
+      <input type="text" id="promptInput" placeholder="Describe your product...">
+      <button onclick="sendPrompt()">Generate</button>
+    </div>
+    <div class="result" id="resultBox"></div>
+  </div>
+
+  <script>
+    async function sendPrompt() {
+      const prompt = document.getElementById("promptInput").value;
+      const resultBox = document.getElementById("resultBox");
+
+      resultBox.style.display = 'block';
+      resultBox.innerHTML = "Generating...";
+
+      try {
+        const response = await fetch("http://localhost:5000/api/prompt", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ prompt }),
+        });
+
+        const data = await response.json();
+
+        resultBox.innerHTML = `
+          <strong>Category:</strong> ${data.category || "N/A"}<br>
+          <strong>Header:</strong> ${data.header || "N/A"}<br>
+          ${data.image ? `<img src="${data.image}" alt="Product Image">` : ''}
+          <strong>Description:</strong> ${data.description || "N/A"}
+        `;
+      } catch (error) {
+        resultBox.innerHTML = "Error: Could not connect to the server.";
+        console.error(error);
+      }
+    }
+  </script>
+</body>
+</html>
