@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+<meta charset="UTF-8">
+<title>Page Title</title>
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<link rel="stylesheet" href="">
+<style>
+</style>
+<script src=""></script>
+<body>
+
+    <div class="">
+    <h1 id = 'productName'>No Name</h1>
+    <img id="productImg"/>
+    <h3 id = 'category'>No Category</h3>
+    <p id = 'productSum'>No Summary</p>
+    </div>
+    <script>
+        // Get the product name
+        const productName = localStorage.getItem('productName') || 'No Name';
+        document.getElementById('productName').textContent = productName;
+        document.getElementById('productImg').src = localStorage.getItem('productImage');
+        let categories = [
+        'Electronics', 'Clothing', 'Home & Kitchen', 'Books', 
+        'Toys & Games', 'Sports & Outdoors', 'Health & Personal Care', 
+        'Beauty & Grooming', 'Automotive', 'Grocery'
+        ];
+
+        const category = categories[localStorage.getItem('productCategory')];
+        document.getElementById('category').textContent = category;
+
+        /*--const summary = document.getElementById('productSum');
+        summary.textContent = 'starting generation';
+            summary.textContent = 'generating...';
+            const response = await fetch('http://localhost:11434/api/generate', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    model: 'llama3',
+                    prompt: 'What is the capital of France?',
+                    stream: false
+                })
+            });
+            const data = await response.json();
+            summary.textContent = data.response;*/
+        async function sendPrompt() {
+        const summary = document.getElementById('productSum');
+
+        const res = await fetch("http://localhost:11434/api/generate", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          model: "llama3",
+          prompt: "what is the capital of France?",
+          stream: false
+            })
+        });
+    }
+
+      const data = await res.json();
+      summary.textContent = data.response;
+
+        
+    </script>
+
+</body>
+</html>

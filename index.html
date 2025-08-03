@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Veritas Product Page Creator</title>
+  <style>
+    body {
+      font-family: sans-serif;
+      padding: 20px;
+    }
+    #preview {
+      margin-top: 20px;
+      max-width: 100%;
+      height: auto;
+    }
+  </style>
+</head>
+<!--image preview-->
+<body>
+  <h1>Upload and Preview Image</h1>
+  <h3>Image:*</h3>
+  <input type="file" id="imageInput" accept="image/*">
+  <br>
+  <br>
+  <h3>Product Name:*</h3>
+  <input type="text" id="productName" name="productName" placeholder="Enter product name">
+  <br>
+  <br>
+  <h3>Product Category:*</h3>
+  <p id="categoryTxt">Choose a category with slider</p>
+  <input type="range" id="category" name="category" min="0" max="9">
+  <br>
+  <br>
+  <h3>Product Summary:*</h3>
+  <input type="text" id="productSum" name="productSum" placeholder="Enter 1 sentence summary of the product">
+  <br>
+  <br>
+  <button id="submitBtn">Submit Info</button>
+  <br>
+  <img id="productImg" alt="Image preview will appear here" />
+  
+
+  <script>
+    //Get image input and product name input
+    const inputImg = document.getElementById('imageInput');
+    const inputName = document.getElementById('productName');
+    inputImg.addEventListener('change', function () {
+      const file = this.files[0];
+      if (file && file.type.startsWith('image/')) {
+        const reader = new FileReader();
+        reader.onload = function (e) {
+          preview.src = e.target.result;
+        }
+        reader.readAsDataURL(file);
+      } else {
+        preview.src = '';
+        alert('Please upload a valid image file.');
+      }
+    });
+
+    //Category slider parts
+    const category = document.getElementById('category');
+    const categoryTxt = document.getElementById('categoryTxt');
+    category.addEventListener('input', function () {
+      const value = this.value;
+      let categories = [
+        'Electronics', 'Clothing', 'Home & Kitchen', 'Books', 
+        'Toys & Games', 'Sports & Outdoors', 'Health & Personal Care', 
+        'Beauty & Grooming', 'Automotive', 'Grocery'
+      ];
+      categoryTxt.textContent = categories[value];
+    });
+
+    //Product summary
+    const productSum = document.getElementById('productSum');
+
+    //Submit button
+    const submitBtn = document.getElementById('submitBtn');
+    submitBtn.addEventListener('click', function () {
+      const name = inputName.value.trim();
+      const summary = productSum.value.trim();
+      const categoryValue = category.value;
+      
+      if (!name || !summary) {
+        alert('Please fill in all fields.');
+        return;
+      }
+
+      localStorage.setItem('productName', name);
+      localStorage.setItem('productCategory', categoryValue);
+      localStorage.setItem('productSummary', summary);
+      localStorage.setItem('productImage', preview.src);
+
+      alert(`Product Name: ${name}\nCategory: ${categoryTxt.textContent}\nSummary: ${summary}`);
+      window.location.href = 'product.html';
+    });
+
+    //Image preview
+    const preview = document.getElementById('productImg');
+  </script>
+</body>
+</html>
