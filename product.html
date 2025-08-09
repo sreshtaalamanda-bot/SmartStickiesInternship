@@ -10,58 +10,137 @@
 <body>
 
     <div class="">
-    <h1 id = 'productName'>No Name</h1>
-    <img id="productImg"/>
-    <h3 id = 'category'>No Category</h3>
-    <p id = 'productSum'>No Summary</p>
+    <div style = "display: flex; justify-content: center; align-items: center; height: 100vh;", id = 'productPage'>
+        <div style="
+            display: flex;
+            box-shadow: 8px 8px 5px rgba(0,0,0,0.3);
+            padding: 1px;
+            width: 500px;
+            height: 500px;
+            background: #e0e0e0;
+            border-radius: 4px;
+            text-align: center;
+            align-items: center;
+            justify-content: center;
+            
+        ", id = "productContainer">
+            <img id="productImg" style = "width: 90%; height: 90%; object-fit: cover;"/>
+        </div>
+        <div style="
+            padding: 0px;
+            width: 500px;
+            background: #ffffff;
+            align-self: center;
+            margin: 0 auto;
+        ", id = 'productInfo'>
+            <h1 id = 'productName'>No Name</h1>
+            <p id = 'category' style = "color: #878787">No Category</p>
+            <hr>
+            <p id = 'productSum'>No Summary</p>
+            <hr>
+            <div style = "text-align: center;">
+                <button id="submitBtn" style=
+                "background-color: rgb(142, 142, 227); 
+                color: white; 
+                font-size: 18px; 
+                padding: 5px 50px;
+                border-radius: 4px;"
+                >
+                Add item to cart</button>
+            </div>
+        </div>
     </div>
-    <script>
+    <script type="module">
+
+        //colors
+        const bgColor = '#d60e0e';
+        const textColor = '#000000';
+        const lightTextColor = '#878787';
+        const UIColor = '#e0e0e0';
+
+    document.addEventListener("DOMContentLoaded", async () => {
         // Get the product name
         const productName = localStorage.getItem('productName') || 'No Name';
         document.getElementById('productName').textContent = productName;
         document.getElementById('productImg').src = localStorage.getItem('productImage');
         let categories = [
-        'Electronics', 'Clothing', 'Home & Kitchen', 'Books', 
-        'Toys & Games', 'Sports & Outdoors', 'Health & Personal Care', 
-        'Beauty & Grooming', 'Automotive', 'Grocery'
+            'Electronics', 'Clothing', 'Home & Kitchen', 'Books', 
+            'Toys & Games', 'Sports & Outdoors', 'Health & Personal Care', 
+            'Beauty & Grooming', 'Automotive', 'Grocery'
         ];
 
         const category = categories[localStorage.getItem('productCategory')];
         document.getElementById('category').textContent = category;
 
-        /*--const summary = document.getElementById('productSum');
-        summary.textContent = 'starting generation';
-            summary.textContent = 'generating...';
-            const response = await fetch('http://localhost:11434/api/generate', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                    model: 'llama3',
-                    prompt: 'What is the capital of France?',
-                    stream: false
-                })
+        //AI
+        const sumTry = localStorage.getItem(productName);
+
+        if(!sumTry) {
+            const { default: GoogleGenerativeAI } = await import("https://esm.run/@google/genai");
+            console.log("GoogleGenerativeAI:", GoogleGenerativeAI);
+            const summary = localStorage.getItem('productSummary') || 'No Summary';
+            document.getElementById("productSum").innerText = "optimizing prompt...";
+            const summaryFin = await optimizePrompt(summary);
+            
+            const prompt = "Generate a product description for a product named '" + productName + "' in the category '" + category + "' with the following information about the product: '" + summaryFin + "'. The description should be concise and engaging, suitable for an online store with no headers.";
+            document.getElementById("productSum").innerText = "generating description...";
+            const geminiResponse = await askGemini(prompt);
+            localStorage.setItem(productName, geminiResponse);
+            document.getElementById("productSum").innerText = geminiResponse;
+        }
+        else {
+            document.getElementById("productSum").innerText = sumTry;
+            console.log("Using cached summary:");
+            alert("Cached description used for product");
+        }
+        setColor();
+        
+    });
+
+    async function askGemini(prompt) {
+        const API_KEY = "AIzaSyDzkI06bw-8ZRuBwEZrt90AoS5D3IaBKdM";
+        const url = "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=" + API_KEY;
+
+        const body = {
+            contents: [{ parts: [{ text: prompt }] }]
+        };
+
+        try {
+            const response = await fetch(url, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(body)
             });
             const data = await response.json();
-            summary.textContent = data.response;*/
-        async function sendPrompt() {
-        const summary = document.getElementById('productSum');
-
-        const res = await fetch("http://localhost:11434/api/generate", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          model: "llama3",
-          prompt: "what is the capital of France?",
-          stream: false
-            })
-        });
+            console.log("Gemini API response:", data);
+            if (data.error) {
+                return `Error: ${data.error.message}`;
+            }
+            // Get the AI's response text
+            return data.candidates?.[0]?.content?.parts?.[0]?.text || "No response from Gemini.";
+        } catch (error) {
+            console.error("Error asking Gemini:", error);
+            return "Sorry, I couldn't get a response.";
+        }
     }
 
-      const data = await res.json();
-      summary.textContent = data.response;
+    async function optimizePrompt(prompt) {
+        const newPrompt = "Optimize the following prompt by removing stop words: " + prompt + ". Return only the optimized prompt without any additional text.";
+        const optimizedPrompt = await askGemini(newPrompt);
+        console.log("Optimized Prompt:", optimizedPrompt);
+        return optimizedPrompt
+    }
 
-        
-    </script>
+    function setColor() {
+        const productContainer = document.getElementById('productContainer');
+        productContainer.style.backgroundColor = UIColor;
+        document.getElementById('productName').style.color = textColor;
+        document.getElementById('productSum').style.color = textColor;
+        document.getElementById('category').style.color = lightTextColor;
+        document.getElementById('productInfo').style.color = bgColor;
+        document.getElementById('productPage').style.color = bgColor;
+    }
+</script>
 
 </body>
 </html>
