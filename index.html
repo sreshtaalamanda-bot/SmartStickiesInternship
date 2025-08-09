@@ -15,29 +15,53 @@
     }
   </style>
 </head>
-<!--image preview-->
 <body>
-  <h1>Upload and Preview Image</h1>
-  <h3>Image:*</h3>
-  <input type="file" id="imageInput" accept="image/*">
-  <br>
-  <br>
-  <h3>Product Name:*</h3>
-  <input type="text" id="productName" name="productName" placeholder="Enter product name">
-  <br>
-  <br>
-  <h3>Product Category:*</h3>
-  <p id="categoryTxt">Choose a category with slider</p>
-  <input type="range" id="category" name="category" min="0" max="9">
-  <br>
-  <br>
-  <h3>Product Summary:*</h3>
-  <input type="text" id="productSum" name="productSum" placeholder="Enter 1 sentence summary of the product">
-  <br>
-  <br>
-  <button id="submitBtn">Submit Info</button>
-  <br>
-  <img id="productImg" alt="Image preview will appear here" />
+      <div style="
+        box-shadow: 8px 8px 5px rgba(0,0,0,0.3);
+        padding: 1px;
+        width: 300px;
+        background: #e0e0e0;
+        border-radius: 8px;
+        text-align: center;
+        align-self: center;
+        margin: 0 auto;
+      ">
+        <h1>Product Builder</h1> 
+        
+      </div>
+      <br><br>
+    <div style = "box-shadow: 8px 8px 4px rgba(0,0,0,0.3);
+        padding: 10px;
+        width: 500px;
+        background: #e0e0e0;
+        border-radius: 4px;
+        text-align: center;
+        align-self: center;
+        margin: 0 auto;">
+      
+      <h3>Image:* <input type="file" id="imageInput" accept="image/*"></h3>
+      <br>
+      <h3>Product Name:* <input type="text" id="productName" name="productName" placeholder="Enter product name"></h3>
+      <br>
+      <h3>Product Category:* <input type="range" id="category" name="category" min="0" max="9"></h3>
+      <p id="categoryTxt">Choose a category with slider</p>
+      <br>
+      <h3>Product Summary:* <input type="text" id="productSum" name="productSum" placeholder="Enter 1 sentence summary of the product"></h3>
+      <button id="submitBtn" style=
+        "background-color: rgb(142, 142, 227); 
+        color: white; 
+        font-size: 18px; 
+        padding: 5px 100px;
+        border-radius: 4px;"
+        >
+        Submit Info</button>
+      <br><br>
+    </div>
+    <br>
+    <div style="text-align: center;">
+      <img id="productImg"/>
+    </div>
+    
   
 
   <script>
